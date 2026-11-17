@@ -1,0 +1,1 @@
+Place parkour datapack .zip files here after first server start. The launcher copies them into world/datapacks on the next start.

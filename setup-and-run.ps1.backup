@@ -1,0 +1,27 @@
+$file = ".\setup-and-run.ps1"
+
+Copy-Item $file "$file.backup" -Force
+
+$content = Get-Content $file -Raw
+
+$start = $content.IndexOf('$javaCandidates =')
+$end = $content.IndexOf('Write-Host "Using Java:')
+
+if ($start -lt 0 -or $end -le $start) {
+    throw "Could not locate Java detection block."
+}
+
+$replacement = @'
+$java = $customJava
+if (-not (Test-Path -LiteralPath $java -PathType Leaf)) {
+    throw "Java executable not found: $java"
+}
+'@ + "`r`n"
+
+$content = $content.Substring(0, $start) +
+           $replacement +
+           $content.Substring($end)
+
+Set-Content -LiteralPath $file -Value $content -Encoding UTF8
+
+Write-Host "Java detection fixed!" -ForegroundColor Green

@@ -1,0 +1,41 @@
+# Server runtime data (worlds, caches, libraries, logs)
+/world/*
+!/world/datapacks/
+/world_nether/
+/world_the_end/
+/dropperrng_room/
+/libraries/
+/versions/
+/cache/
+/logs/
+/.paper-remapped/
+
+# Server binaries and build outputs
+/paper.jar
+/plugins/
+*.jar
+
+# Secrets, player identities, and per-machine state
+/server.properties
+/ops.json
+/usercache.json
+/whitelist.json
+/banned-ips.json
+/banned-players.json
+/eula.txt
+/.console_history
+/debug.log
+/.claude/settings.local.json
+
+# Generated server config and screenshots
+/bukkit.yml
+/spigot.yml
+/commands.yml
+/help.yml
+/permissions.yml
+/version_history.json
+/image.png
+/image copy.png
+
+# Claude Code tooling, not project content
+/.claude/
