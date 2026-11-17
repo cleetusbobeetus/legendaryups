@@ -1,0 +1,35 @@
+# LegendaryPunch - TikTok gift punches, HORIZONTAL knockback only.
+# TikFinity actions:  punch1 {username}   punch2 {username}   punch3 {username}
+#
+# Vertical push is always 0 and the player's own vertical speed is never touched (the push is ADDED on the
+# client, like explosion knockback), so falling through the dropper keeps its full fall speed.
+#
+# strength = blocks/tick added sideways while in the air (falling).
+# ground-multiplier = extra force while standing (ground friction stops you ~5x faster than air).
+punches:
+  light:
+    strength: 0.35
+    ground-multiplier: 2.0
+    volume: 0.7
+    particles: 6
+  medium:
+    strength: 0.65
+    ground-multiplier: 2.0
+    volume: 0.9
+    particles: 12
+  heavy:
+    strength: 1.05
+    ground-multiplier: 2.0
+    volume: 1.0
+    particles: 22
+
+# Every punch pushes the player straight BACKWARDS (opposite to where they face), horizontal only.
+# Nothing is shown on screen (no text, no hit flash, no particles).
+
+target:
+  player: ""          # blank = the only online player, or the only one playing the dropper
+  play-tag: "dp_play"
+
+cooldown-ms: 0        # same player, two punches closer than this = one. 0 = every /punch counts (viewers pay per punch)
+
+sound: true           # punch sound (not on screen); false = completely silent too

@@ -1,0 +1,91 @@
+# WatermelonSave 3.2 - Galaxy (villain) vs Watermelon Love (hero) for Legendary Ups Infinite Dropper
+#
+# TikFinity actions (Minecraft command, gift selection is done in TikFinity):
+#   Galaxy           ->  galaxyreset {username}
+#   Watermelon Love  ->  watermelonsave {username}
+# Remove any other TikFinity action you had on Galaxy (e.g. dropper:event/gift_large_by) or both will run.
+
+# Seconds viewers get to send Watermelon Love before the reset happens.
+countdown-seconds: 60
+
+target:
+  # Minecraft player the gifts apply to. Blank = the only online player, or the only one playing the dropper.
+  player: ""
+
+datapack:
+  # Tag the Infinite Dropper puts on players in a run. A Galaxy needs the player to be playing.
+  # Blank ("") = no tag needed: a Galaxy works as long as the player has a dp_level score (in or out of the dropper).
+  play-tag: ""
+
+galaxy:
+  # A second Galaxy while one is counting down: queue | ignore | restart
+  while-pending: queue
+  queue-max: 10
+  # Pause between a saved/finished Galaxy and the next queued one ("ANOTHER GALAXY INCOMING").
+  # A Watermelon in this pause doesn't touch the next one.
+  queue-gap-seconds: 6
+  # Same viewer + same command within this many ms = one delivery (protects against double-sent commands).
+  dedupe-window-ms: 300
+
+save:
+  # Watermelon Love with no reset pending: celebrate (animation, no progress change) | message | ignore
+  when-idle: celebrate
+  # A second Watermelon from the same viewer within this many ms is a duplicate and can't cancel a newer Galaxy.
+  duplicate-guard-ms: 2000
+  # Queued Galaxies when a Watermelon saves the active one: keep (each needs its own save) | cancel-all
+  queued-policy: keep
+
+offline:
+  # Player offline / out of the dropper when the countdown ends: defer (reset once when they're back) | cancel
+  at-expiry: defer
+
+# Paper-only animated HUD: the real Watermelon Love PNG moves on the streamer's screen (vanilla client, no mod).
+# It uses display entities only the target player can see, locked to their camera, plus the WatermelonSave pack.
+screen-hud:
+  enabled: true
+  image-size: 1.0          # watermelon size multiplier (floating + celebration)
+  hero-seconds: 2.8        # save celebration length
+  tiktok-safe: true        # keep text inside the centre 9:16 column
+  intensity: 1.0           # bounce/wobble/sparkle amount (0.25-2)
+  move-speed: 1.0
+  rainbow-speed: 1.0
+  volume: 1.0
+  vignette: true           # red screen-edge tint during the Galaxy warning
+  galaxy-intensity: 1.0
+  sparkles: true
+  boss-bar-and-chat: false # also show the boss bar + chat lines to the streamer (off = only the HUD timer)
+  # Camera fit - only change if things look too big/small or off-centre:
+  distance: 1.2            # blocks in front of your eyes
+  fov: 70                  # your Minecraft FOV setting
+  eye-offset: 0.18         # passenger seat height above the eyes
+
+resource-pack:
+  # send   = the plugin hosts the pack and offers it when you join (accept the prompt)
+  # manual = you put WatermelonSave-ResourcePack.zip in .minecraft/resourcepacks yourself
+  # off    = no pack: title fallback only
+  mode: send
+  host: "127.0.0.1"        # address YOUR Minecraft client uses to reach this server PC (127.0.0.1 = same PC)
+  bind: "0.0.0.0"
+  port: 8164
+  required: false
+
+hud:
+  # Players with the optional WatermelonSave HUD Fabric mod get its HUD instead.
+  enabled: true
+
+display:
+  show-to: everyone          # everyone | target
+  # Fallback (players WITHOUT the HUD mod) below:
+  use-resource-pack: false   # small font icons in the fallback titles/boss bar (off: some clients show boxes)
+  boss-bar: true
+  warning-title-seconds: 4
+  final-countdown-seconds: 10
+  celebration-seconds: 6
+  particles: true
+  world-particles: false     # in-world totem/heart particles (off: the HUD draws small 2D ones instead)
+  chat: true
+
+sounds:
+  volume: 1.0
+
+debug: false

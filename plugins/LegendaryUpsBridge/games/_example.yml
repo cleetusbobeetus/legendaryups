@@ -1,0 +1,34 @@
+# Example game profile. Files starting with "_" are ignored.
+# Copy to e.g. dropper.yml, edit, then run /lub reload.
+# The Legendary Ups launcher's Game Import writes these files for you after you approve actions.
+#
+# Only actions with `approved: true` are registered. Three kinds are supported:
+#   function - runs ONE datapack function (as the streamer player by default)
+#   command  - an administrator-approved command template. Only {player} and declared
+#              int/enum/bool params can be substituted. Free text is never allowed.
+#   core     - a preset of a built-in action with fixed parameters
+id: dropper
+name: Infinite Dropper
+actions:
+  reset_level:
+    label: Reset current level
+    type: function
+    function: dropper:reset_level
+    as_player: true
+    approved: false
+  zombie_wave:
+    label: Zombie wave (5)
+    type: core
+    core: spawn_mob
+    params:
+      entity: zombie
+      count: 5
+      radius: 4
+    approved: false
+  meteor:
+    label: Meteor strike (requires Legendary Meteor Strike plugin)
+    type: command
+    command: "meteor strike {player} {size}"
+    params:
+      size: { type: int, min: 1, max: 5, default: 2 }
+    approved: false

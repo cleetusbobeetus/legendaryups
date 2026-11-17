@@ -1,0 +1,391 @@
+# ════════════════════════════════════════════════════════════════════
+#   DropperRNG 2.2 — Legendary UPS RNG Casino Room
+#
+#   How to use this file:
+#     1. Change a value below.
+#     2. Type  /rng reload  in game (or  rng reload  in the console).
+#     3. Type  /rng status  to check what's active.
+#   If you make a mistake, /rng reload tells you what's wrong and keeps
+#   your previous settings, so a typo can't break a live stream.
+#
+#   Text uses MiniMessage colours: <green> <red> <gold> <bold> ...
+#   Gradients: <gradient:#ff5ef7:#5ee7ff>text</gradient>
+# ════════════════════════════════════════════════════════════════════
+
+
+config-version: 3
+
+
+# ── 1. WHAT HAPPENS WITH THE RESULT ─────────────────────────────────
+integration:
+  # auto     → "freefall" when the Freefall / Infinite Dropper datapack is installed, otherwise "preview". (default)
+  # freefall → change the level through the datapack's OWN up/down functions (dropper:act/do_up / do_down),
+  #            so dp_level, boss stages, negative levels, checkpoints, HUD and the level spawn stay the datapack's.
+  # preview  → only SHOW the result. Never changes anyone's level.
+  # command  → run the command(s) below to change the player's level.
+  # api      → another plugin applies it via the DropperRNG API.
+  mode: auto
+
+  # Where to read the player's CURRENT level (needed to show "Level 150 → 63"):
+  #   none       → don't read a level
+  #   scoreboard → a scoreboard objective (set its name below)
+  #   xp         → the player's normal Minecraft XP level
+  #   api        → asked from another plugin through the DropperRNG API
+  level-source: none
+  scoreboard-objective: "level"
+
+  # Commands run by the CONSOLE in "command" mode, top to bottom.
+  # Leave as [] to never run anything.
+  #
+  # Placeholders:
+  #   {player}         player name               {uuid}           player UUID
+  #   {sign}           + or -                    {amount}         85
+  #   {signed_amount}  85 or -42 (no "+", so commands accept it)
+  #   {current_level}  level before the spin     {target_level}   level after the spin
+  #   {viewer}         TikTok viewer name (or "none")
+  #
+  # {current_level}/{target_level} need a level-source. If the level can't be
+  # read, the commands are skipped (nothing is ever run with a wrong value).
+  #
+  # Example:
+  # commands:
+  #   - "scoreboard players set {player} level {target_level}"
+  commands: []
+
+  # 2.0: after running the commands, wait this many ticks and read the level back to confirm it.
+  # If it can't be confirmed the machine says "REQUESTED", never a fake "✔".
+  verify-ticks: 2
+  # 2.0 (api mode): how long to wait for an integration plugin to confirm the change.
+  apply-timeout-seconds: 5
+
+
+# ── 2. THE ROLL ─────────────────────────────────────────────────────
+roll:
+  # The number of levels is picked between these (both included). Every number is equally likely.
+  minimum: 1
+  maximum: 100
+  # Chance of + versus −. 50 and 50 = a perfectly fair coin flip.
+  positive-chance: 50
+  negative-chance: 50
+
+
+# ── 3. LEVEL LIMITS ─────────────────────────────────────────────────
+levels:
+  # The result can never send someone below/above these levels.
+  minimum-destination: 1
+  maximum-destination: 1000000
+  # If a roll goes past a limit:
+  #   clamp  → stop at the limit (Level 20 with −50 → Level 1)
+  #   cancel → don't change the level at all for that spin
+  boundary-handling: clamp
+
+
+# ── 4. ANIMATION ────────────────────────────────────────────────────
+animation:
+  # false = skip the animation and show the result instantly
+  enabled: true
+  # Phase 1: + / − flicker, slowing down
+  sign-seconds: 2.5
+  # Short pause after the sign lands (build the suspense!)
+  pause-seconds: 0.75
+  # Phase 2: slot-machine numbers, slowing down
+  number-seconds: 4.5
+  # Phase 3: how long the final result stays on screen
+  result-display-seconds: 5
+  # Reel speed. 1 = changes every tick (fastest). The reel starts at the
+  # fastest speed and slows to the slowest one at the end of each phase.
+  fastest-frame-ticks: 1
+  slowest-frame-ticks: 9
+
+
+# ── 5. WHERE IT SHOWS ───────────────────────────────────────────────
+display:
+  # everyone → all online players see the spinner
+  # player   → only the player being spun for
+  show-to: everyone
+  title: true
+  action-bar: true
+  boss-bar: true
+  # pink, blue, red, green, yellow, purple or white
+  boss-bar-color: purple
+  # Chat messages when a spin starts and when it lands
+  chat-announcements: true
+
+
+# ── 6. QUEUE & SPAM PROTECTION ──────────────────────────────────────
+queue:
+  gap-seconds: 1.0
+  # How many spins can run at the same time. 1 is best for a stream.
+  max-concurrent-spins: 1
+  # true  → extra spins wait in line and play one after another
+  # false → extra spins are refused while one is running
+  enabled: true
+  max-size: 100
+
+cooldown:
+  # Seconds a PLAYER must wait between their own /rng spin. 0 = no cooldown.
+  player-seconds: 10
+  # Also apply the cooldown to console / TikFinity commands?
+  # Usually false: every gift should get its spin (they queue instead).
+  apply-to-console: false
+
+anti-spam:
+  # Ignore an identical spin (same player + same viewer) that arrives again
+  # within this many milliseconds — stops double-fired gift events.
+  # 0 = off. For exact de-duplication pass an event id: rng spin <player> <viewer> id:<unique-id>
+  duplicate-window-ms: 400
+
+
+# ── 7. TIKTOK ───────────────────────────────────────────────────────
+tiktok:
+  # Show "sent by @viewer" when TikFinity/TikControl passes a viewer name:
+  #   rng spin CantSleepZane {username}
+  attribution: true
+  # Name to show when none is given. Leave "" to show nothing.
+  default-viewer: ""
+
+
+# ── 8. DISCONNECTS & RESTARTS ───────────────────────────────────────
+reliability:
+  # cancel      → a player who leaves mid-spin loses that spin, and their queued spins are dropped
+  # keep-queued → their spins wait and play when they come back
+  # (A spin interrupted before the result is revealed never changes anything.)
+  on-disconnect: cancel
+  # Save waiting spins when the server stops and play them after it starts again
+  restore-queue-after-restart: true
+
+
+# ── 9. SOUNDS ───────────────────────────────────────────────────────
+# Format: "sound-name volume pitch"   (volume 0-10, pitch 0.5-2)
+# Sound names: https://minecraft.wiki/w/Sounds.json  ·  "none" turns one off
+sounds:
+  enabled: true
+  sign-tick: "minecraft:block.note_block.hat 0.7 1.0"
+  sign-lock: "minecraft:block.note_block.bell 1.0 1.2"
+  number-tick: "minecraft:block.note_block.pling 0.6 0.8"
+  positive:
+    - "minecraft:ui.toast.challenge_complete 1.0 1.0"
+    - "minecraft:entity.player.levelup 1.0 1.2"
+  negative:
+    - "minecraft:entity.wither.spawn 0.5 1.6"
+    - "minecraft:block.anvil.land 0.8 0.6"
+
+
+# ── 10. PARTICLES ───────────────────────────────────────────────────
+# Format: "particle-name amount spread"   — dust also takes a colour: "minecraft:dust 50 0.8 #FF2020"
+# Amount is capped at 200 per burst to keep the server smooth.
+particles:
+  enabled: true
+  positive:
+    - "minecraft:totem_of_undying 60 0.8"
+    - "minecraft:happy_villager 25 1.0"
+  negative:
+    - "minecraft:dust 50 0.8 #FF2020"
+    - "minecraft:large_smoke 15 0.5"
+  # Small extra bursts after the reveal (0 = just the one big burst)
+  follow-up-bursts: 3
+
+
+# ── 11. TEXT ────────────────────────────────────────────────────────
+# Placeholders: {player} {viewer} {amount} {current_level} {target_level}
+#               {prefix} {spinner} {by} (= the attribution line, or nothing)
+# Note: Minecraft's font can't draw most emoji (🎰 shows as a box), so the
+# defaults use symbols that render in-game: ✦ ▶ ◀ →
+messages:
+  prefix: "<dark_gray>[<gradient:#ff5ef7:#5ee7ff><bold>RNG</bold></gradient><dark_gray>]</dark_gray> "
+  spinner-name: "<gradient:#ff5ef7:#ffd25e><bold>✦ RNG SPINNER ✦</bold></gradient>"
+
+  # Phase 1 — sign
+  rolling-sign: "<gray>Rolling the sign…"
+  sign-locked: "<white>Sign locked in!"
+  sign-positive: "<green><bold>+</bold>"
+  sign-negative: "<red><bold>−</bold>"
+
+  # Phase 2 — slot reel ({number} {prev} {next})
+  rolling-number: "<gray>Spinning the levels…"
+  reel-title-positive: "<green><bold>+{number}</bold>"
+  reel-title-negative: "<red><bold>−{number}</bold>"
+  reel: "<dark_gray>{prev}   <gray>▶ <white><bold>{number}</bold> <gray>◀   <dark_gray>{next}"
+
+  # Phase 3 — reveal
+  result-title-positive: "<green><bold>+{amount} LEVELS</bold>"
+  result-title-negative: "<red><bold>−{amount} LEVELS</bold>"
+  result-subtitle-level: "<gray>Level <white>{current_level}</white> <dark_gray>→</dark_gray> <gold><bold>{target_level}</bold>"
+  result-subtitle: "{spinner}"
+  boss-bar: "{spinner} <gray>• <yellow>{player}</yellow>{by}"
+  attribution: " <gray>• sent by <light_purple><bold>@{viewer}</bold>"
+  level-change: " <gray>(Level <white>{current_level}</white> → <gold>{target_level}</gold>)"
+
+  # Chat
+  chat-start: "{prefix}<yellow>{player}</yellow> <gray>is spinning the RNG wheel!{by}"
+  chat-result-positive: "{prefix}<yellow>{player}</yellow> <gray>rolled <green><bold>+{amount}</bold></green> levels!{level_change}{note}{by}"
+  chat-result-negative: "{prefix}<yellow>{player}</yellow> <gray>rolled <red><bold>−{amount}</bold></red> levels!{level_change}{note}{by}"
+  note-preview: " <dark_gray>[preview — no level changed]"
+  note-test: " <aqua>[TEST]"
+  note-clamped: " <gray>(stopped at the level limit)"
+  note-blocked: " <red>(blocked — outside the level limits)"
+  note-not-applied: " <gold>(not applied)"
+  note-requested: " <gray>(level change requested — not verified)"
+  note-failed: " <red>(level change failed — see console)"
+
+  # Feedback
+  queued: "{prefix}<gray>Spin for <yellow>{player}</yellow> is in line <white>(#{position})</white>."
+  duplicate: "{prefix}<gray>Duplicate spin ignored."
+  cooldown: "{prefix}<red>Please wait <white>{seconds}s</white> before spinning again."
+  busy: "{prefix}<red>A spin is already running. Try again in a moment."
+  queue-full: "{prefix}<red>The spin queue is full."
+  player-not-found: "{prefix}<red>Player <white>{player}</white> is not online."
+  invalid-name: "{prefix}<red>That is not a valid player name."
+  no-permission: "{prefix}<red>You don't have permission to do that."
+  console-needs-player: "{prefix}<red>From the console use: <white>rng spin [player] [viewer]"
+  reload-ok: "{prefix}<green>Configuration reloaded. <gray>Mode: <white>{mode}"
+  reload-failed: "{prefix}<red>Config has errors — kept the previous settings:"
+  cancelled: "{prefix}<gray>Cancelled <white>{count}</white> spin(s) for <yellow>{player}</yellow>."
+  nothing-to-cancel: "{prefix}<gray>No active or queued spins for <yellow>{player}</yellow>."
+
+
+# ── FREEFALL / INFINITE DROPPER DATAPACK (integration.mode: freefall or auto) ──
+freefall:
+  # The datapack's "currently playing" tag. DropperRNG removes it while the player is in the RNG room
+  # (so the datapack doesn't keep failing/teleporting them there) and puts it back afterwards.
+  play-tag: "dp_play"
+  # Level-ups obey the datapack's #allowskip switch, like its own "up" events.
+  respect-allowskip: true
+  # Prints a [RNG-DEBUG] trace in the server console for every spin:
+  # level before spin, RNG outcome, requested change, level after applying, after the return teleport, after next respawn.
+  debug: true
+  # The datapack plays its own splat (fx_death) when you land. Turn this on only if you still don't hear it
+  # on the first landing after a spin (it would otherwise play twice).
+  landing-sound-fallback: false
+
+
+# ════════════════════════════════════════════════════════════════════
+#   2.0 — THE RNG ROOM & GIANT SLOT MACHINE
+#   (Everything above still works exactly like 1.0.)
+# ════════════════════════════════════════════════════════════════════
+
+# ── 12. HOW SPINS ARE SHOWN ─────────────────────────────────────────
+presentation:
+  # room     → teleport into the Legendary UPS casino and watch the giant machine (needs /rng room create)
+  # in-world → the machine appears in front of the player wherever they are (no teleport)
+  # hud      → the 1.0 titles / boss bar / action bar spinner
+  mode: room
+  # Used when mode is "room" but the room isn't built/ready yet: in-world or hud
+  fallback: in-world
+
+
+# ── 13. THE RNG ROOM ────────────────────────────────────────────────
+# Build it with:  /rng room preview   (dry run, shows an outline)
+#                 /rng room create    (asks for "confirm" if anything would be replaced)
+room:
+  # A separate empty (void) world just for the room — nothing else can be damaged there.
+  world: "dropperrng_room"
+  # Create that world automatically if it doesn't exist.
+  create-world: true
+  # Centre of the room's floor, and which way the player faces the machine (north/south/east/west).
+  x: 0
+  y: 100
+  z: 0
+  facing: north
+  # "default" = the built-in Legendary UPS casino.
+  # Or the name of a template in plugins/DropperRNG/rooms/ (make one with /rng room export myroom).
+  template: default
+  # Neon colours for the default room: legendary (cyan/purple/magenta), inferno (gold/red), emerald (green)
+  theme: legendary
+  # Allow building in a world DropperRNG didn't create (e.g. your main world). Keep false unless you're sure.
+  allow-existing-worlds: false
+  # Blocks placed per tick while building (higher = faster, lower = smoother for the server).
+  blocks-per-tick: 2000
+  # Keep the room's chunks loaded so teleporting in is instant.
+  keep-chunks-loaded: true
+  # Nudge the camera/viewing position (blocks: x = right, y = up, z = toward the machine).
+  view-offset:
+    x: 0
+    y: 0
+    z: 0
+
+
+# ── 14. THE SLOT MACHINE ────────────────────────────────────────────
+machine:
+  # Overall size (1.0 = sized to fill a vertical TikTok crop from the viewing platform).
+  scale: 1.0
+  # Marquee light bulbs around the frame (0–64).
+  bulbs: 24
+  # Size of the reel numbers and the header/footer text.
+  symbol-scale: 18
+  text-scale: 4.2
+  # Fine-tune vertical centring of the reel numbers if your font differs.
+  symbol-center: 0.12
+  # In-world mode: size and distance in front of the player.
+  in-world-scale: 0.45
+  in-world-distance: 9
+  # true = use the chunky pixel digits from the optional DropperRNG resource pack.
+  use-resource-pack-font: false
+  # "LEGENDARY" logo and floating sparkles in the room.
+  room-ambience: true
+  # Text shown on the machine. Placeholders: {amount} {signed} {current_level} {target_level}
+  # {applied_level} {player} {viewer}
+  text:
+    idle: "<gradient:#ffd25e:#ff9d2e><bold>SPIN THE WHEEL</bold></gradient>"
+    spinning: "<gradient:#5ee7ff:#c13cff><bold>SPINNING…</bold></gradient>"
+    up-title: "<green><bold>LEVEL UP!</bold>"
+    down-title: "<red><bold>LEVEL DOWN!</bold>"
+    up-footer: "<green><bold>UP {amount} LEVELS</bold>"
+    down-footer: "<red><bold>DOWN {amount} LEVELS</bold>"
+    destination: "<white><bold>LEVEL {current_level} <gold>→</gold> {target_level}</bold>"
+    destination-unknown: "<gray><bold>{signed} LEVELS</bold>"
+    applied: "<green><bold>✔ LEVEL {applied_level}</bold>"
+    requested: "<yellow><bold>LEVEL {target_level} REQUESTED</bold>"
+    preview: "<gray><bold>PREVIEW — NO LEVEL CHANGE</bold>"
+    blocked: "<red><bold>⚠ OUTSIDE LEVEL LIMITS</bold>"
+    failed: "<red><bold>⚠ LEVEL NOT CHANGED</bold>"
+    viewer: "<light_purple>sent by <bold>@{viewer}</bold>"
+    logo: "<gradient:#22e6ff:#c13cff:#ff3cc7><bold>LEGENDARY</bold></gradient>"
+    returning: "<gradient:#5ee7ff:#c13cff><bold>RETURNING…</bold></gradient>"
+
+
+# ── 15. CINEMATIC TIMING (seconds) ──────────────────────────────────
+# Default total ≈ 11 seconds.
+cinematic:
+  arrival-seconds: 1.25        # machine powers up, "SPIN THE WHEEL"
+  sign-seconds: 1.75           # all reels spin; the + / − reel lands first
+  number-seconds: 2.6          # then the tens reel lands…
+  reel-stagger-seconds: 1.1    # …and the ones reel this much later
+  result-hold-seconds: 2.0     # LEVEL UP / LEVEL DOWN
+  destination-seconds: 1.0     # "LEVEL 57 → 14"
+  # Reel speed: 1 = normal, 2 = twice as fast, 0.5 = slow-motion
+  reel-speed: 1.0
+  # Room sounds volume (0 = mute machine sounds) and particle amount (0 = none)
+  sound-volume: 1.0
+  particle-intensity: 1.0
+
+
+# ── 16. PLAYER PROTECTION DURING A SPIN ─────────────────────────────
+# Nothing on the player is changed (inventory, XP, effects, game mode stay exactly as they are) —
+# these only cancel events while the spin runs.
+protection:
+  # locked = can look around but not walk, platform = can walk a few blocks, free = no limit
+  movement: locked
+  block-damage: true
+  block-hunger: true
+  block-interactions: true
+  # Another plugin tries to teleport the player mid-spin: block (keep the spin) or abort (cancel the spin)
+  other-teleports: block
+
+
+# ── 17. RETURNING FROM THE ROOM ─────────────────────────────────────
+return:
+  # Pause after the destination screen before teleporting back.
+  delay-seconds: 0.75
+  # Where to send the player:
+  #   original → exactly where they were before the spin
+  #   command  → run the commands below (e.g. your dropper's own "go to level" command)
+  #   api      → an integration plugin chooses the location (RngReturnLocationEvent)
+  destination: original
+  # after-return  → teleport back first, then apply the level change (best if your level command teleports)
+  # before-return → apply the level change in the room, show "✔ LEVEL 14", then teleport back
+  apply: after-return
+  # Used when destination is "command". Same placeholders as integration.commands, plus {applied_level}.
+  # If the player is still in the room afterwards, they're sent to their original location.
+  commands: []
+

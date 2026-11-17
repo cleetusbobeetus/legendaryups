@@ -1,0 +1,56 @@
+# DropperBoard - TikFinity-driven LIVE CHAT board for the Legendary Ups Infinite Dropper.
+# The board is the datapack's existing chat wall (text display tagged dp_chatwall): same place, size and theme.
+# No TikTok connection or API token is used; events arrive as /dropperboard commands (TikFinity, RCON, console).
+
+board:
+  lines: 7                      # messages shown (5-8)
+  show-last-gift: true          # "last gift" ticker line at the bottom (as on the original wall)
+  show-coins: true
+  coins-mode: per-gift          # per-gift: {coins} is the value of ONE gift (total = coins x repeat); total: {coins} is already the total
+  combo-window-seconds: 8       # same viewer + same gift within this time = one growing "x N" line
+  reveal-interval-ticks: 5      # a burst of events scrolls in one line every N ticks (20 ticks = 1 s)
+  take-over-datapack-wall: true # stop the datapack redrawing its own (OFFLINE) text on the wall
+
+status:
+  start: ready                  # ready | active  (status shown before the first event)
+  # status texts (shown after "LIVE CHAT ")
+  ready: "● READY"
+  active: "● ACTIVE"
+  idle: "● IDLE"
+  paused: "● PAUSED"
+
+idle:
+  after-seconds: 180            # 0 = never go idle
+  mode: dim                     # keep (nothing changes) | dim (status IDLE, grey text) | hint (status IDLE + hint line) | clear (empty the board)
+  hint: "Comment on the LIVE to appear here!"
+
+text:
+  title: "LIVE CHAT "
+  empty: "waiting for chat…"
+  last-gift: "✦ last gift: "
+  coins-word: "coins"
+
+limits:
+  max-name-length: 20
+  max-message-length: 60
+  max-gift-name-length: 24
+  max-queue: 48                 # pending events; when full the oldest chat line is dropped (gifts are kept)
+  per-user-chat-cooldown-ms: 1500
+  duplicate-window-seconds: 15  # same viewer + same text again within this time is ignored
+  max-chat-per-second: 15       # chats + follows (gifts are never rate-limited)
+
+filter:
+  emoji: strip                  # strip (Minecraft shows most emoji as boxes) | keep
+  mask-links: true
+  blocked-words: []             # e.g. [badword, otherword]  -> shown as ****
+
+effects:
+  gift-popup: true              # short floating "Rose x5" text that rises from the board and fades
+  max-popups: 4                 # hard cap on effect entities at any time (never saved to the world)
+  particles: true
+  sound: true
+  big-gift-coins: 100           # gifts worth at least this many coins get fireworks
+
+security:
+  allow-operators: true         # ops (permission dropperboard.admin) may run the commands in game
+  allow-command-blocks: false   # command blocks / minecarts
