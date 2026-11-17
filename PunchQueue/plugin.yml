@@ -1,0 +1,6 @@
+name: PunchQueue
+version: '1.0.0'
+main: gg.legendaryups.punchqueue.PunchQueuePlugin
+api-version: '1.21'
+depend: [LegendaryPunch]
+description: Queues every /punch1-3 so bursts of TikFinity punches all land, one (or more) per tick.

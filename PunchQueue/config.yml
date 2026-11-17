@@ -1,0 +1,4 @@
+# PunchQueue - every /punch1-3 is queued and delivered at this rate.
+# 1 = one punch per server tick (20/sec). 10,000 punches at 1/tick takes about 8 minutes.
+# Raise it to drain bursts faster (e.g. 5 = 100/sec, 10000 punches in about 100 seconds).
+punches-per-tick: 1
