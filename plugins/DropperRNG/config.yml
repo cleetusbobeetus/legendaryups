@@ -226,3 +226,20 @@ messages:
   reload-failed: "{prefix}<red>Config has errors — kept the previous settings:"
   cancelled: "{prefix}<gray>Cancelled <white>{count}</white> spin(s) for <yellow>{player}</yellow>."
   nothing-to-cancel: "{prefix}<gray>No active or queued spins for <yellow>{player}</yellow>."
+
+room:
+  world: "dropperrng_room"
+  create-world: true
+  x: 0
+  y: 100
+  z: 0
+  facing: north
+  template: casino
+  theme: legendary
+  allow-existing-worlds: false
+  blocks-per-tick: 2000
+  keep-chunks-loaded: true
+  view-offset:
+    x: 0
+    y: 0
+    z: 0
