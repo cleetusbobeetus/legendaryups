@@ -1,8 +1,0 @@
-{
-  "values": [
-    "rngwin:ensure_chatwall",
-    "rngwin:ensure_arena",
-    "rngwin:ensure_arena_chat",
-    "rngwin:win_tick"
-  ]
-}

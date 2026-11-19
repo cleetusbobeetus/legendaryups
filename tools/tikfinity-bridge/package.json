@@ -1,0 +1,14 @@
+{
+  "name": "tikfinity-rcon-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local TikFinity (ServerTap-style HTTP) to Minecraft RCON bridge for the ChunkChange server",
+  "main": "bridge.js",
+  "scripts": {
+    "start": "node bridge.js",
+    "check": "node bridge.js --check",
+    "test": "node --test test/bridge.test.js"
+  },
+  "engines": { "node": ">=18" },
+  "license": "UNLICENSED"
+}

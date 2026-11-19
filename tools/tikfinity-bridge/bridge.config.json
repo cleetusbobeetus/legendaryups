@@ -1,0 +1,17 @@
+{
+  "listenHost": "127.0.0.1",
+  "listenPort": 4567,
+  "serverPropertiesPath": "../../server.properties",
+  "rcon": {
+    "host": "127.0.0.1",
+    "fallbackPort": 25577,
+    "connectTimeoutMs": 3000,
+    "commandTimeoutMs": 5000,
+    "maxBackoffMs": 30000
+  },
+  "rateLimit": { "perSecond": 4, "burst": 8 },
+  "maxCommandLength": 300,
+  "maxBodyBytes": 4096,
+  "blockedRootCommands": ["stop", "op", "deop", "reload", "whitelist", "ban-ip", "pardon-ip"],
+  "targetPlayer": "CantSleepZane"
+}
