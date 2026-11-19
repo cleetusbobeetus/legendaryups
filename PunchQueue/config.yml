@@ -1,4 +1,7 @@
 # PunchQueue - every /punch1-3 is queued and delivered at this rate.
-# 1 = one punch per server tick (20/sec). 10,000 punches at 1/tick takes about 8 minutes.
-# Raise it to drain bursts faster (e.g. 5 = 100/sec, 10000 punches in about 100 seconds).
+# Punches are delivered every drain-every-ticks server ticks (20 ticks = 1 second), punches-per-tick at a time.
+# punches-per-second: how many punches go out each second, spread evenly (6 = one every ~3.3 ticks).
+# If this line is removed, the old drain-every-ticks / punches-per-tick settings are used instead.
+punches-per-second: 6
+drain-every-ticks: 16
 punches-per-tick: 1

@@ -243,3 +243,9 @@ room:
     x: 0
     y: 0
     z: 0
+
+presentation:
+  # room → "rng spin" teleports the viewer into the RNG room (needs the room built)
+  mode: room
+  # Used when the room isn't built/ready: in-world keeps the spin working either way
+  fallback: in-world

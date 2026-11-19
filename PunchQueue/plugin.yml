@@ -1,6 +1,16 @@
-name: PunchQueue
+﻿name: PunchQueue
 version: '1.0.0'
 main: gg.legendaryups.punchqueue.PunchQueuePlugin
 api-version: '1.21'
 depend: [LegendaryPunch]
 description: Queues every /punch1-3 so bursts of TikFinity punches all land, one (or more) per tick.
+commands:
+  punchtoggle:
+    description: Turn TikFinity punches on or off.
+    usage: /punchtoggle [on|off|toggle]
+    permission: punchqueue.toggle
+permissions:
+  punchqueue.toggle:
+    description: Toggle punches.
+    default: op
+
