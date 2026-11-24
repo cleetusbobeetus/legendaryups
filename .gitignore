@@ -39,3 +39,12 @@
 
 # Claude Code tooling, not project content
 /.claude/
+
+# Local-only backups, nested copies, client mods, crash dumps, build output
+/_backup_punchqueue_1.0.0/
+/LegendaryUps-Parkour-Test-1.21.10/
+/client/
+/crash-reports/
+/PunchQueue/build/
+/PunchQueue-2.0.0-handoff.zip
+*.nov17-backup

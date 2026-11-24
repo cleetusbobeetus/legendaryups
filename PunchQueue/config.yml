@@ -1,4 +1,10 @@
-# PunchQueue - every /punch1-3 is queued and delivered at this rate.
-# 1 = one punch per server tick (20/sec). 10,000 punches at 1/tick takes about 8 minutes.
-# Raise it to drain bursts faster (e.g. 5 = 100/sec, 10000 punches in about 100 seconds).
-punches-per-tick: 1
+# PunchQueue 2.0.0 - durable, unlimited queue for /punch1-3.
+#
+# Every accepted punch is written to plugins/PunchQueue/queue-journal.log (fsynced) BEFORE the command says OK,
+# and survives restarts, reloads and crashes. There is no queue size limit.
+#
+# Rate: physical punches applied per second. Fractions are fine; they are spread evenly across ticks.
+#   20       = 20 per second (one per tick)
+#   8.333333 = 30,000 per hour (30,000 punches take exactly one hour)
+#   1        = 1 per second (3,600 per hour)
+punches-per-second: 6.111111

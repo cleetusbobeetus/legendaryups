@@ -11,17 +11,17 @@ punches:
     strength: 0.35
     ground-multiplier: 2.0
     volume: 0.7
-    particles: 6
+    particles: 0
   medium:
     strength: 0.65
     ground-multiplier: 2.0
     volume: 0.9
-    particles: 12
+    particles: 0
   heavy:
     strength: 1.05
     ground-multiplier: 2.0
     volume: 1.0
-    particles: 22
+    particles: 0
 
 # Every punch pushes the player straight BACKWARDS (opposite to where they face), horizontal only.
 # Nothing is shown on screen (no text, no hit flash, no particles).
@@ -33,3 +33,7 @@ target:
 cooldown-ms: 0        # same player, two punches closer than this = one. 0 = every /punch counts (viewers pay per punch)
 
 sound: true           # punch sound (not on screen); false = completely silent too
+
+# Turns off all punch particles (hearts, sparks, dust, blocks). Sound and knockback still play.
+effects:
+  particles: false
